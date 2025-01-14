@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Settings, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export function SettingsDialog() {
-  const [apiKey, setApiKey] = useState('');
+export function SettingsDialog({ apiKey, onApiKeyChange }: { apiKey: string; onApiKeyChange: (apiKey: string) => void }) {
+
   const [open, setOpen] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const { toast } = useToast();
@@ -17,9 +17,9 @@ export function SettingsDialog() {
   useEffect(() => {
     const savedApiKey = localStorage.getItem('openai-api-key');
     if (savedApiKey) {
-      setApiKey(savedApiKey);
+      onApiKeyChange(savedApiKey);
     }
-  }, []);
+  }, [onApiKeyChange]);
 
   const validateApiKey = async (key: string) => {
     try {
@@ -106,7 +106,7 @@ export function SettingsDialog() {
               id="api-key"
               type="password"
               value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
+              onChange={(e) => onApiKeyChange(e.target.value)}
               placeholder="sk-..."
             />
             <p className="text-sm text-muted-foreground">
