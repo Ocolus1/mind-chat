@@ -19,7 +19,7 @@ export function SettingsDialog({ apiKey, onApiKeyChange }: { apiKey: string; onA
     if (savedApiKey) {
       onApiKeyChange(savedApiKey);
     }
-  }, [onApiKeyChange]);
+  }, []);
 
   const validateApiKey = async (key: string) => {
     try {
