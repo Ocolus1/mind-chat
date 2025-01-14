@@ -13,7 +13,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useRef, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 export function ChatInterface({
@@ -24,6 +24,7 @@ export function ChatInterface({
 	onApiKeyChange: (apiKey: string | null) => void;
 }) {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
 
 	useEffect(() => {
 		const savedKey = localStorage.getItem('openai-api-key');
@@ -53,8 +54,15 @@ export function ChatInterface({
 			body: {
 				apiKey: apiKey,
 			},
+			onFinish: () => {
+				setIsStreaming(false);
+			},
+			onResponse: () => {
+				setIsStreaming(true);
+			},
 			onError: (error) => {
 				console.error('Chat error:', error);
+        setIsStreaming(false);
 				const errorMessage =
 					error.message ||
 					'An error occurred while sending your message';
@@ -103,7 +111,7 @@ export function ChatInterface({
 		<div className="flex flex-col h-[calc(100vh-8rem)] bg-background">
 			<ScrollArea className="flex-1 p-4">
 				<div className="space-y-4">
-					{messages.map((message) => (
+					{messages.map((message, i) => (
 						<div
 							key={message.id}
 							className={`flex ${
@@ -134,7 +142,7 @@ export function ChatInterface({
 							</Card>
 						</div>
 					))}
-					{isLoading && (
+					{isLoading && !isStreaming && (
 						<div className="flex justify-start">
 							<Card className="max-w-[80%] p-4 bg-muted">
 								<div className="flex items-start gap-3">
@@ -220,8 +228,8 @@ export function ChatInterface({
 			</form>
 			<div className="p-4 text-center text-sm text-muted-foreground border-t">
 				<p className="font-semibold mb-1">
-					If you&apos;re experiencing a crisis, please contact your
-					local emergency services or mental health crisis hotline.
+					If you&apos;re experiencing a crisis, please contact your local
+					emergency services or mental health crisis hotline.
 				</p>
 				<p>
 					This AI chatbot is not a substitute for professional mental
